@@ -25,26 +25,7 @@ class _WeatherState extends State<Weather> {
       'latitude': "52.52",
       "longitude": "52.52",
     });
-    // var myapi = Uri.https('10.0.2.2:3001', '/api/items');
-    // var publicApi = Uri.http("api.publicapis.org", '/entries');
-    var ss = await http.post(publicApi,
-        headers: {'Content-Type': 'application/json'},
-        body: convert.jsonEncode(
-          {
-            "API": "Matssss",
-            "Description": "Resource to help get pets adopted",
-            "Auth": "apiKey",
-            "HTTPS": true,
-            "Cors": "yes",
-            "Link": "https://www.adoptapet.com/public/apis/pet_list.html",
-            "Category": "Animals"
-          },
-        ));
-    if (ss.statusCode == 201) {
-      print('Post request successful! Response: ${ss.body}');
-    } else {
-      print('Failed to make post request. Status Code: ${ss.statusCode}');
-    }
+
     var response = await http.get(weatherUrl);
     setState(() {
       isLoading = false;
