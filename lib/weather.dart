@@ -5,6 +5,7 @@ import 'dart:convert' as convert;
 
 import 'package:http/http.dart' as http;
 import 'package:myapiproject/models/Location.dart';
+import 'package:myapiproject/models/WeatherModel.dart';
 
 class Weather extends StatefulWidget {
   const Weather({super.key});
@@ -15,12 +16,13 @@ class Weather extends StatefulWidget {
 
 class _WeatherState extends State<Weather> {
   bool isLoading = false;
+  WeatherModel? weatherResponse = null;
   callApi() async {
     setState(() {
       isLoading = true;
     });
-    var url =
-        Uri.https('www.googleapis.com', '/books/v1/volumes', {'q': '{http}'});
+    // var url =
+    //     Uri.http('www.googleapis.com', '/books/v1/volumes', {'q': '{http}'});
     var weatherUrl = Uri.https('api.open-meteo.com', '/v1/forecast', {
       'latitude': "52.52",
       "longitude": "52.52",
@@ -29,22 +31,13 @@ class _WeatherState extends State<Weather> {
     var response = await http.get(weatherUrl);
     setState(() {
       isLoading = false;
+      if (response.statusCode == 200) {
+        weatherResponse =
+            WeatherModel.fromMap(convert.jsonDecode(response.body));
+      } else {
+        print('Request failed with status: ${response.statusCode}.');
+      }
     });
-    if (response.statusCode == 200) {
-      Location jsonResponse =
-          Location.fromMap(convert.jsonDecode(response.body));
-      var itemCount = jsonResponse.generationTimeMs;
-      print('Number of books about http: $itemCount.');
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
-    }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // callApi();
   }
 
   @override
@@ -59,6 +52,8 @@ class _WeatherState extends State<Weather> {
             child: Column(
           children: [
             if (isLoading) CircularProgressIndicator(),
+            if (weatherResponse != null)
+              Text("Timezone from Api = : ${weatherResponse!.timezone}"),
             ElevatedButton(
               child: Text("Get Details"),
               onPressed: () {
