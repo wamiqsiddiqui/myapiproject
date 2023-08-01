@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 
 import 'dart:convert' as convert;
 
+import 'package:myapiproject/models/SocialMediaPost.dart';
+
 class MyWeather extends StatefulWidget {
   const MyWeather({super.key});
 
@@ -13,32 +15,38 @@ class MyWeather extends StatefulWidget {
 
 class _MyWeatherState extends State<MyWeather> {
   bool isLoading = true;
+  bool isSuccess = false;
+  bool hasError = false;
   void callPostApi() async {
-    final url = Uri.parse('https://jsonplaceholder.typicode.com/posts');
+    // final url = Uri.parse('https://jsonplaceholder.typicode.com/posts');
+    final postUrl = Uri.https('jsonplaceholder.typicode.com', '/posts');
 
     // Replace the title, body, and userId with the desired values
-    final Map<String, dynamic> data = {
-      'title': 'wamiq',
-      'body': 'bar',
-      'userId': 1,
-    };
 
+    SocialMediaPost socialMediaPost = SocialMediaPost(
+        userId: 10, id: 20, title: "Facebook Post", body: "Cooking Recipe");
+    Map<String, dynamic> socialMediaMappedData = socialMediaPost.toMap();
     final headers = {
       'Content-type': 'application/json; charset=UTF-8',
     };
 
     try {
-      final response = await http.post(url,
-          headers: headers, body: convert.jsonEncode(data));
+      final response = await http.post(postUrl,
+          headers: headers, body: convert.jsonEncode(socialMediaMappedData));
 
-      if (response.statusCode == 201) {
-        // Successful POST request
-        final jsonResponse = convert.jsonDecode(response.body);
-        print(jsonResponse);
-      } else {
-        // If the server responds with an error status code, handle it accordingly
-        print('Error: ${response.statusCode}');
-      }
+      setState(() {
+        isLoading = false;
+        if (response.statusCode == 201) {
+          // Successful POST request
+          final jsonResponse = convert.jsonDecode(response.body);
+          print(jsonResponse);
+          isSuccess = true;
+        } else {
+          // If the server responds with an error status code, handle it accordingly
+          print('Error: ${response.statusCode}');
+          hasError = true;
+        }
+      });
     } catch (e) {
       // Handle any exceptions that occurred during the POST request
       print('Error: $e');
@@ -60,7 +68,7 @@ class _MyWeatherState extends State<MyWeather> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    callApi();
+    callPostApi();
   }
 
   @override
@@ -73,7 +81,11 @@ class _MyWeatherState extends State<MyWeather> {
       body: Center(
         child: isLoading
             ? CircularProgressIndicator()
-            : Text("Api Response Completed"),
+            : hasError
+                ? Text("Api Failed")
+                : isSuccess
+                    ? Text("Api Response Completed Successfully")
+                    : Text("Nothing"),
       ),
     );
   }
