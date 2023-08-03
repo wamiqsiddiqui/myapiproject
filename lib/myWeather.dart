@@ -17,6 +17,71 @@ class _MyWeatherState extends State<MyWeather> {
   bool isLoading = true;
   bool isSuccess = false;
   bool hasError = false;
+  void _patchPost() async {
+    final Map<String, dynamic> updatedData = {
+      'title': 'Patched Title',
+    };
+
+    final patchMethodUrl =
+        Uri.https('jsonplaceholder.typicode.com', '/posts/1');
+    final response = await http.patch(
+      patchMethodUrl,
+      headers: {'Content-Type': 'application/json'},
+      body: convert.jsonEncode(updatedData),
+    );
+
+    if (response.statusCode == 200) {
+      // Successful patch
+      print('Post patched successfully!');
+    } else {
+      // Error handling
+      print('Error patching post. Status code: ${response.statusCode}');
+      print('Error message: ${response.body}');
+    }
+  }
+
+  void _deletePost() async {
+    final deleteMethodUrl =
+        Uri.https('jsonplaceholder.typicode.com', '/posts/1');
+    final response = await http.delete(
+      deleteMethodUrl,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      // Successful delete
+      print('Post deleted successfully!');
+    } else {
+      // Error handling
+      print('Error deleting post. Status code: ${response.statusCode}');
+      print('Error message: ${response.body}');
+    }
+  }
+
+  void _updatePost() async {
+    final Map<String, dynamic> updatedData = {
+      'title': 'Updated Title',
+      'body': 'Updated Body',
+      'userId': 1,
+    };
+
+    final putMethodUrl = Uri.https('jsonplaceholder.typicode.com', '/posts/1');
+    final response = await http.put(
+      putMethodUrl,
+      headers: {'Content-Type': 'application/json'},
+      body: convert.jsonEncode(updatedData),
+    );
+
+    if (response.statusCode == 200) {
+      // Successful update
+      print('Post updated successfully!');
+    } else {
+      // Error handling
+      print('Error updating post. Status code: ${response.statusCode}');
+      print('Error message: ${response.body}');
+    }
+  }
+
   void callPostApi() async {
     // final url = Uri.parse('https://jsonplaceholder.typicode.com/posts');
     final postUrl = Uri.https('jsonplaceholder.typicode.com', '/posts');
